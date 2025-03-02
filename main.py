@@ -210,4 +210,4 @@ with gr.Blocks() as demo:
         combine_output = gr.Textbox(label="نتیجه")
         combine_button.click(combine_audio_with_video, inputs=[keep_audio, audio_volume, voice_choice], outputs=combine_output)
 
-demo.launch()
+demo.launch(share=True)
