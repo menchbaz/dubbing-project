@@ -32,4 +32,4 @@ with gr.Blocks() as app:
 
     dub_btn.click(dubbing_process, outputs=[gr.Textbox(), final_video_output])
 
-app.launch()
+app.launch(share=True)
