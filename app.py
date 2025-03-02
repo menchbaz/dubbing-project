@@ -40,7 +40,7 @@ def upload_video(upload_method, yt_link, uploaded_file):
     
     elif upload_method == "حافظه داخلی" and uploaded_file is not None:
         with open('input_video.mp4', 'wb') as f:
-            f.write(uploaded_file.read())
+            f.write(uploaded_file)
         subprocess.run(['ffmpeg', '-i', 'input_video.mp4', '-vn', 'audio.wav'])
         return "ویدیو آپلود و صوت استخراج شد."
     
@@ -58,7 +58,7 @@ def extract_text(extraction_method, uploaded_subtitle):
     
     elif extraction_method == "آپلود زیرنویس" and uploaded_subtitle is not None:
         with open('audio.srt', 'wb') as f:
-            f.write(uploaded_subtitle.read())
+            f.write(uploaded_subtitle)
         return "زیرنویس آپلود شد."
     
     return "لطفاً یک روش استخراج معتبر انتخاب کنید."
@@ -107,7 +107,7 @@ def translate_subtitles(translation_method, source_lang, target_lang, api_key, u
     
     elif translation_method == "آپلود زیرنویس بصورت دستی" and uploaded_translated_sub is not None:
         with open('audio_fa.srt', 'wb') as f:
-            f.write(uploaded_translated_sub.read())
+            f.write(uploaded_translated_sub)
         return "زیرنویس ترجمه‌شده آپلود شد."
     
     return "لطفاً یک روش ترجمه معتبر انتخاب کنید."
@@ -143,20 +143,20 @@ async def generate_audio_segments(voice_choice):
         communicate = edge_tts.Communicate(sub.text, selected_voice)
         await communicate.save(f"dubbing_project/dubbed_segments/temp_{i+1}.mp3")
         
-        subprocess.run(['ffmpeg', '-i', f"dubbing_project/dubbed_segments/temp_{i+1}.mp3', '-y', f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav"])
+        subprocess.run(['ffmpeg', '-i', f"dubbing_project/dubbed_segments/temp_{i+1}.mp3', '-y', f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav'])
         
         result = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav"], capture_output=True, text=True)
         original_duration = float(result.stdout.strip())
         
         speed_factor = original_duration / target_duration
-        subprocess.run(['ffmpeg', '-i', f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav', '-filter:a', f'rubberband=tempo={speed_factor}', '-y', f"dubbing_project/dubbed_segments/dub_{i+1}.wav"])
+        subprocess.run(['ffmpeg', '-i', f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav', '-filter:a', f'rubberband=tempo={speed_factor}', '-y', f"dubbing_project/dubbed_segments/dub_{i+1}.wav'])
         
         os.remove(f"dubbing_project/dubbed_segments/temp_{i+1}.mp3")
         os.remove(f"dubbing_project/dubbed_segments/temp_wav_{i+1}.wav")
     
     return f"سگمنت‌های صوتی با صدای {voice_choice} ساخته شدند."
 
-# تابع رابط برای اجرای تابع async
+# تابع رابط برای اجرای async
 def generate_audio_segments_sync(voice_choice):
     asyncio.run(generate_audio_segments(voice_choice))
     return f"سگمنت‌های صوتی با صدای {voice_choice} ساخته شدند."
@@ -164,7 +164,7 @@ def generate_audio_segments_sync(voice_choice):
 # تابع ترکیب ویدیو و صدا
 def combine_video_audio(voice_choice, keep_original_audio, original_audio_volume):
     if not os.path.exists('input_video.mp4'):
-        return "ویدیوی ورودی پیدا نشد."
+        return "ویدیوی ورودی پیدا نشد.", None
     
     subs = pysrt.open('audio_fa.srt')
     filter_complex = "[0:a]volume=0[original_audio];" if not keep_original_audio else f"[0:a]volume={original_audio_volume}[original_audio];"
@@ -186,8 +186,8 @@ def combine_video_audio(voice_choice, keep_original_audio, original_audio_volume
     subprocess.run(command, shell=True)
     
     if os.path.exists(output_filename):
-        return output_filename, f"ویدیو با صدای {voice_choice} ساخته شد."
-    return None, "خطا در ساخت ویدیو."
+        return f"ویدیو با صدای {voice_choice} ساخته شد.", output_filename
+    return "خطا در ساخت ویدیو.", None
 
 # رابط کاربری Gradio
 with gr.Blocks(title="Dubbing Tool") as demo:
@@ -219,7 +219,19 @@ with gr.Blocks(title="Dubbing Tool") as demo:
         translate_btn.click(translate_subtitles, inputs=[translation_method, source_lang, target_lang, api_key, uploaded_translated_sub], outputs=translate_output)
     
     with gr.Tab("تولید سگمنت‌های صوتی"):
-        voice_choice = gr.Dropdown(list(VOICE_MAP.keys()), label="انتخاب گوینده", value="فرید (FA)")
+        voice_choice = gr.Dropdown(list({
+            "فرید (FA)": "fa-IR-FaridNeural", "دلارا (FA)": "fa-IR-DilaraNeural",
+            "Jenny (EN)": "en-US-JennyNeural", "Guy (EN)": "en-US-GuyNeural",
+            "Katja (DE)": "de-DE-KatjaNeural", "Conrad (DE)": "de-DE-ConradNeural",
+            "Elvira (ES)": "es-ES-ElviraNeural", "Alvaro (ES)": "es-ES-AlvaroNeural",
+            "Denise (FR)": "fr-FR-DeniseNeural", "Henri (FR)": "fr-FR-HenriNeural",
+            "Nanami (JA)": "ja-JP-NanamiNeural", "Keita (JA)": "ja-JP-KeitaNeural",
+            "SunHi (KO)": "ko-KR-SunHiNeural", "InJoon (KO)": "ko-KR-InJoonNeural",
+            "Xiaoxiao (ZH)": "zh-CN-XiaoxiaoNeural", "Yunyang (ZH)": "zh-CN-YunyangNeural",
+            "Svetlana (RU)": "ru-RU-SvetlanaNeural", "Dmitry (RU)": "ru-RU-DmitryNeural",
+            "Amina (AR)": "ar-EG-AminaNeural", "Hamed (AR)": "ar-EG-HamedNeural",
+            "Isabella (IT)": "it-IT-IsabellaNeural", "Diego (IT)": "it-IT-DiegoNeural"
+        }.keys()), label="انتخاب گوینده", value="فرید (FA)")
         generate_btn = gr.Button("تولید")
         generate_output = gr.Textbox(label="نتیجه")
         generate_btn.click(generate_audio_segments_sync, inputs=[voice_choice], outputs=generate_output)
@@ -228,8 +240,8 @@ with gr.Blocks(title="Dubbing Tool") as demo:
         keep_original_audio = gr.Checkbox(label="حفظ صدای اصلی ویدیو", value=False)
         original_audio_volume = gr.Slider(0, 1, value=0.05, step=0.005, label="میزان صدای اصلی (در صورت فعال بودن)")
         combine_btn = gr.Button("ترکیب")
-        combine_output_file = gr.File(label="دانلود ویدیوی نهایی")
         combine_output_text = gr.Textbox(label="نتیجه")
-        combine_btn.click(combine_video_audio, inputs=[voice_choice, keep_original_audio, original_audio_volume], outputs=[combine_output_file, combine_output_text])
+        combine_output_file = gr.File(label="دانلود ویدیوی نهایی")
+        combine_btn.click(combine_video_audio, inputs=[voice_choice, keep_original_audio, original_audio_volume], outputs=[combine_output_text, combine_output_file])
 
-demo.launch()
+demo.launch(share=True)
