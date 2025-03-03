@@ -125,29 +125,11 @@ def combine_audio_video(keep_original_audio, original_audio_volume):
 
 # تابع برای پاکسازی فایل‌ها
 def clean_files():
-    !rm -rf /content/*
+    shutil.rmtree('/content', ignore_errors=True)
     return "Previous session files cleaned."
 
 # ایجاد رابط کاربری
 voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "Guy (EN)", "Katja (DE)", "Conrad (DE)", "Elvira (ES)", "Alvaro (ES)", "Denise (FR)", "Henri (FR)", "Nanami (JA)", "Keita (JA)", "SunHi (KO)", "InJoon (KO)", "Xiaoxiao (ZH)", "Yunyang (ZH)", "Svetlana (RU)", "Dmitry (RU)", "Amina (AR)", "Hamed (AR)", "Isabella (IT)", "Diego (IT)"], label="Select Voice")
-
-    keep_original_audio = gr.Checkbox(label="Keep Original Audio", value=False)
-    original_audio_volume = gr.Slider(label="Original Audio Volume", minimum=0, maximum=1, step=0.005, value=0.05)
-
-    generate_segments_btn = gr.Button("Generate Speech Segments")
-    combine_audio_video_btn = gr.Button("Combine Audio and Video")
-    clean_files_btn = gr.Button("Clean Previous Session Files")
-
-    output = gr.Textbox(label="Output")
-
-    upload_btn.click(upload_video_and_extract_audio, inputs=[upload_method, yt_link, file], outputs=output)
-    extract_btn.click(extract_text_from_audio, inputs=[extraction_method, subtitle_file], outputs=output)
-    translation_method = gr.Radio(["AI Translation", "Manual Upload"], label="Select Translation Method")
-    source_language = gr.Dropdown(["English (EN)", "Persian (FA)", "German (DE)", "French (FR)", "Italian (IT)", "Spanish (ES)", "Chinese (ZH)", "Korean (KO)", "Russian (RU)", "Arabic (AR)", "Japanese (JA)"], label="Source Language")
-    target_language = gr.Dropdown(["Persian (FA)", "English (EN)", "German (DE)", "French (FR)", "Italian (IT)", "Spanish (ES)", "Chinese (ZH)", "Korean (KO)", "Russian (RU)", "Arabic (AR)", "Japanese (JA)"], label="Target Language")
-    api_key = gr.Textbox(label="Google API Key", type="password")
-
-    voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "Guy (EN)", "Katja (DE)", "Conrad (DE)", "Elvira (ES)", "Alvaro (ES)", "Denise (FR)", "Henri (FR)", "Nanami (JA)", "Keita (JA)", "SunHi (KO)", "InJoon (KO)", "Xiaoxiao (ZH)", "Yunyang (ZH)", "Svetlana (RU)", "Dmitry (RU)", "Amina (AR)", "Hamed (AR)", "Isabella (IT)", "Diego (IT)"], label="Select Voice")
 
     keep_original_audio = gr.Checkbox(label="Keep Original Audio", value=False)
     original_audio_volume = gr.Slider(label="Original Audio Volume", minimum=0, maximum=1, step=0.005, value=0.05)
