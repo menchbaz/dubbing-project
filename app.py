@@ -129,12 +129,7 @@ def clean_files():
     return "Previous session files cleaned."
 
 # ایجاد رابط کاربری
-voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "Guy (EN)", "Katja (DE)", "Conrad (DE)", "Elvira (ES)", "Alvaro (ES)", "Denise (FR)", "Henri (FR)", "Nanami (JA)", "Keita (JA)", "SunHi (KO)", "InJoon (KO)", "Xiaoxiao (ZH)", "Yunyang (ZH)", "Svetlana (RU)", "Dmitry (RU)", "Amina (AR)", "Hamed (AR)", "Isabella (IT)", "Diego (IT)"], label="Select Voice")
-
-    keep_original_audio = gr.Checkbox(label="Keep Original Audio", value=False)
-    original_audio_volume = gr.Slider(label="Original Audio Volume", minimum=0, maximum=1, step=0.005, value=0.05)
-
-    generate_segments_btn = gr.Button("Generate Speech Segments")
+generate_segments_btn = gr.Button("Generate Speech Segments")
     combine_audio_video_btn = gr.Button("Combine Audio and Video")
     clean_files_btn = gr.Button("Clean Previous Session Files")
 
@@ -146,4 +141,4 @@ voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "G
     combine_audio_video_btn.click(combine_audio_video, inputs=[keep_original_audio, original_audio_volume], outputs=output)
     clean_files_btn.click(clean_files, outputs=output)
 
-demo.launch(share=True)
+demo.launch() share=True
