@@ -8,14 +8,6 @@ import edge_tts
 import subprocess
 import asyncio
 
-# تابع برای نصب کتابخانه از GitHub
-def install_github_library():
-    encoded_url = "aHR0cHM6Ly9naXRodWIuY29tL3lhcmFuYmFyemkvYWlnb2xkZW4tYXVkaW8tdG8tdGV4dC5naXQ="
-    decoded_url = base64.b64decode(encoded_url.encode()).decode()
-    !pip install git+$decoded_url
-
-install_github_library()
-
 # تابع برای آپلود ویدیو و استخراج صدا
 def upload_video_and_extract_audio(upload_method, yt_link, file):
     if os.path.exists('input_video.mp4'):
@@ -137,24 +129,7 @@ def clean_files():
     return "Previous session files cleaned."
 
 # ایجاد رابط کاربری
-with gr.Blocks() as demo:
-    gr.Markdown("# Video Dubbing with Subtitle Translation")
-
-    upload_method = gr.Radio(["Upload File", "YouTube"], label="Select Upload Method")
-    yt_link = gr.Textbox(label="YouTube Link")
-    file = gr.File(label="Upload Video File")
-    upload_btn = gr.Button("Upload Video and Extract Audio")
-
-    extraction_method = gr.Radio(["Whisper", "Manual Upload"], label="Select Extraction Method")
-    subtitle_file = gr.File(label="Upload Subtitle File (Optional)")
-    extract_btn = gr.Button("Extract Text from Audio")
-
-    translation_method = gr.Radio(["AI Translation", "Manual Upload"], label="Select Translation Method")
-    source_language = gr.Dropdown(["English (EN)", "Persian (FA)", "German (DE)", "French (FR)", "Italian (IT)", "Spanish (ES)", "Chinese (ZH)", "Korean (KO)", "Russian (RU)", "Arabic (AR)", "Japanese (JA)"], label="Source Language")
-    target_language = gr.Dropdown(["Persian (FA)", "English (EN)", "German (DE)", "French (FR)", "Italian (IT)", "Spanish (ES)", "Chinese (ZH)", "Korean (KO)", "Russian (RU)", "Arabic (AR)", "Japanese (JA)"], label="Target Language")
-    api_key = gr.Textbox(label="Google API Key", type="password")
-
-    voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "Guy (EN)", "Katja (DE)", "Conrad (DE)", "Elvira (ES)", "Alvaro (ES)", "Denise (FR)", "Henri (FR)", "Nanami (JA)", "Keita (JA)", "SunHi (KO)", "InJoon (KO)", "Xiaoxiao (ZH)", "Yunyang (ZH)", "Svetlana (RU)", "Dmitry (RU)", "Amina (AR)", "Hamed (AR)", "Isabella (IT)", "Diego (IT)"], label="Select Voice")
+voice_choice = gr.Dropdown(["فرید (FA)", "دلارا (FA)", "Jenny (EN)", "Guy (EN)", "Katja (DE)", "Conrad (DE)", "Elvira (ES)", "Alvaro (ES)", "Denise (FR)", "Henri (FR)", "Nanami (JA)", "Keita (JA)", "SunHi (KO)", "InJoon (KO)", "Xiaoxiao (ZH)", "Yunyang (ZH)", "Svetlana (RU)", "Dmitry (RU)", "Amina (AR)", "Hamed (AR)", "Isabella (IT)", "Diego (IT)"], label="Select Voice")
 
     keep_original_audio = gr.Checkbox(label="Keep Original Audio", value=False)
     original_audio_volume = gr.Slider(label="Original Audio Volume", minimum=0, maximum=1, step=0.005, value=0.05)
